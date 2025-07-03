@@ -1,0 +1,15 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="ourmod"
+version="1.1.1"
+displayName="OurMod"
+displayURL="https://example.com"
+logoFile=""
+credits="Big Ev"
+authors="Big Ev"
+description="""
+A simple test mod.
+"""
