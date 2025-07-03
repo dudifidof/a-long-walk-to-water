@@ -95,32 +95,11 @@ shadowJar {
     relocate 'org.java_websocket', 'com.example.ourmod.shaded.websocket'
 }
 
-// Import ForgeGradle's FG6 ReobfuscateJar task type
-import net.minecraftforge.gradle.patcher.tasks.ReobfuscateJar
-
-// Create reobfShadowJar task to reobfuscate the shadow jar
-tasks.register('reobfShadowJar', ReobfuscateJar) {
-    group = 'build'
-    description = 'Reobfuscate the fat shadow jar for distribution'
-
-    // Use the provider from tasks.named to avoid calling `.get()` on ShadowJar
-    inputFile = tasks.named('shadowJar', ShadowJar).get().archiveFile.get().asFile
-    outputFile = file("${buildDir}/libs/${base.archivesName}-${version}-shadow-reobf.jar")
-
-    dependsOn tasks.named('shadowJar')
-}
-
-// Make build depend on both default reobfJar and your reobfShadowJar
-tasks.named('build').configure {
-    dependsOn(tasks.named('reobfJar'))          // Default reobfuscation of normal jar
-    dependsOn(tasks.named('reobfShadowJar'))    // Reobfuscation of shadow jar
-}
-
 // Optional publishing (not changed)
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
-            artifact tasks.named('reobfShadowJar')
+            artifact tasks.named('shadowJar')
         }
     }
     repositories {
