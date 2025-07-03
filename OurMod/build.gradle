@@ -103,10 +103,11 @@ tasks.register('reobfShadowJar', ReobfuscateJar) {
     group = 'build'
     description = 'Reobfuscate the fat shadow jar for distribution'
 
-    inputFile = tasks.shadowJar.get().archiveFile.get().asFile
+    // Use the provider from tasks.named to avoid calling `.get()` on ShadowJar
+    inputFile = tasks.named('shadowJar', ShadowJar).get().archiveFile.get().asFile
     outputFile = file("${buildDir}/libs/${base.archivesName}-${version}-shadow-reobf.jar")
 
-    dependsOn tasks.shadowJar
+    dependsOn tasks.named('shadowJar')
 }
 
 // Make build depend on both default reobfJar and your reobfShadowJar
