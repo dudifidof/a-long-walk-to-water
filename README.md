@@ -285,7 +285,7 @@ public class OurMod {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
-        LOGGER.info("OurMod v1.1.0 loaded successfully.");
+        LOGGER.info("OurMod v2.0.0 loaded successfully.");
 
         if (Config.logDirtBlock) {
             LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
