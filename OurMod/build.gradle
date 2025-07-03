@@ -1,0 +1,135 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+group = 'com.example.ourmod'
+version = '1.1.1'
+
+base {
+    archivesName = 'ourmod'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                ourmod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', 'ourmod'
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', 'ourmod'
+            args '--nogui'
+        }
+
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', 'ourmod'
+        }
+
+        data {
+            workingDirectory project.file('run-data')
+            args '--mod', 'ourmod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.20.1-47.4.3"
+    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    def replaceProps = [
+        minecraft_version      : '1.20.1',
+        minecraft_version_range: '[1.20.1]',
+        forge_version          : '47.4.3',
+        forge_version_range    : '[47.4.3,)',
+        loader_version_range   : '[47,)',
+        mod_id                 : 'ourmod',
+        mod_name               : 'OurMod',
+        mod_license            : 'All Rights Reserved',
+        mod_version            : '1.1.1',
+        mod_authors            : 'Big Ev',
+        mod_description        : 'A simple test mod.'
+    ]
+    inputs.properties replaceProps
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProps + [project: project]
+    }
+}
+
+// Ensure default jar task is enabled
+tasks.named('jar', Jar).configure {
+    enabled = true
+}
+
+// Configure shadowJar (fat jar with relocation)
+shadowJar {
+    archiveClassifier.set('shadow')
+    relocate 'org.java_websocket', 'com.example.ourmod.shaded.websocket'
+}
+
+// Import ForgeGradle's ReobfuscateJar task type
+import net.minecraftforge.gradle.userdev.tasks.ReobfuscateJar
+
+// Create reobfShadowJar task to reobfuscate the shadow jar
+tasks.register('reobfShadowJar', ReobfuscateJar) {
+    group = 'build'
+    description = 'Reobfuscate the fat shadow jar for distribution'
+
+    inputFile = tasks.shadowJar.get().archiveFile.get().asFile
+    outputFile = file("${buildDir}/libs/${base.archivesName}-${version}-shadow-reobf.jar")
+
+    dependsOn tasks.shadowJar
+}
+
+// Make build depend on both default reobfJar and your reobfShadowJar
+tasks.named('build').configure {
+    dependsOn(tasks.named('reobfJar'))          // Default reobfuscation of normal jar
+    dependsOn(tasks.named('reobfShadowJar'))    // Reobfuscation of shadow jar
+}
+
+// Optional publishing (not changed)
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact tasks.named('reobfShadowJar')
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+
+// UTF-8 encoding for all Java compilation
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

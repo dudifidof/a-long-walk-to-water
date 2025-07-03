@@ -1,0 +1,8 @@
+1.0.0
+| | |
+| | Bug
+| Small
+Big
+- 1.0.0 built the thing and called it our mod | 6/29/2025
+- 1.1.0 made the command /lockon and the command /unlock | 6/30/2025
+- 1.1.1 fixed the smoothing look | 6/30/25
