@@ -2,9 +2,21 @@
 
 Hey Codex, we’re building a custom Minecraft Forge mod called OurMod for version 1.20.1. It’s created by Big Ev, and it's got a clean setup using Gradle with proper configuration files like mods.toml and Forge config specs. The mod currently adds a new food item, a custom block, and a creative mode tab to organize them. It logs some debug info like block names and user info to make sure everything's registering right.
 
+The mod is now **version 2.0.0** and depends on the `Java-WebSocket` library so it can listen on a local WebSocket port and react to chat commands.
+
 Big Ev is also experimenting with commands that interact with the world—like triggering TNT explosions based on external inputs (think YouTube or Twitch chat). We’ve wired up deferred registries, custom config files, and event listeners to prep for adding those interactive mechanics. The mod has clean client/server setup logic using Forge’s event bus and annotation system.
 
 We’re debugging a crash related to missing or mismatched metadata in the mods.toml, but that’s being fixed by making sure modId, version, and displayName match exactly across files. Once stable, this will be a powerful modding base for live Minecraft interactivity and creative world effects. It’s tight, well-structured, and ready to evolve into something wild.
+
+### Building and running
+Use the included Gradle wrapper from the `OurMod` directory:
+
+```bash
+cd OurMod
+./gradlew runClient
+```
+
+This will download dependencies and start a development client with the mod loaded.
 
 Below is the code from the mod for reference:
 ### Config.java
@@ -285,7 +297,7 @@ public class OurMod {
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         LOGGER.info("HELLO FROM COMMON SETUP");
-        LOGGER.info("OurMod v1.1.0 loaded successfully.");
+        LOGGER.info("OurMod v2.0.0 loaded successfully.");
 
         if (Config.logDirtBlock) {
             LOGGER.info("DIRT BLOCK >> {}", ForgeRegistries.BLOCKS.getKey(Blocks.DIRT));
