@@ -5,4 +5,5 @@
 Big
 - 1.0.0 built the thing and called it our mod | 6/29/2025
 - 1.1.0 made the command /lockon and the command /unlock | 6/30/2025
-- 2.0.0 fixed the smoothing look | 6/30/2025
+- 1.1.0 fixed the smoothing look | 6/30/2025
+- 2.0.0 got the socet thing in the mod and in the game at same time not working | 7/3/2025
