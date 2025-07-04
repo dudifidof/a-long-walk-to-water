@@ -1,9 +1,8 @@
-1.0.0
-| | |
-| | Bug
-| Small
-Big
-- 1.0.0 built the thing and called it our mod | 6/29/2025
-- 1.1.0 made the command /lockon and the command /unlock | 6/30/2025
-- 1.1.0 fixed the smoothing look | 6/30/2025
-- 2.0.0 got the socet thing in the mod and in the game at same time not working | 7/3/2025
+Changelog
+---------
+* **1.0.0** – Initial release of OurMod. (6/29/2025)
+* **1.1.0** – Added `/lockon` and `/unlock` commands and improved smooth look. (6/30/2025)
+* **2.0.0** – Introduced WebSocket server integration. (7/3/2025)
+* **2.1.0** – Added `/websocket start` and `/websocket stop` commands. (7/4/2025)
+* **2.2.0** – Improved WebSocket lifecycle handling and added chat feedback. (7/5/2025)
+* **2.3.0** – WebSocket port can now be set to 0 for an ephemeral port and commands show the running port. (7/6/2025)

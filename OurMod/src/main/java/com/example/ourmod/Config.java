@@ -12,11 +12,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Forge's config APIs
+/**
+ * Mod configuration options loaded via Forge's config system.
+ */
 @Mod.EventBusSubscriber(modid = OurMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class Config
-{
+public final class Config {
+    private Config() {}
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     private static final ForgeConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
@@ -26,6 +27,14 @@ public class Config
     private static final ForgeConfigSpec.IntValue MAGIC_NUMBER = BUILDER
             .comment("A magic number")
             .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
+
+    public static final ForgeConfigSpec.IntValue WEBSOCKET_PORT = BUILDER
+            .comment("Port for the WebSocket server")
+            .defineInRange("websocketPort", 9001, 1, 65535);
+
+    public static final ForgeConfigSpec.BooleanValue ENABLE_WEBSOCKET = BUILDER
+            .comment("Whether to launch the WebSocket server")
+            .define("enableWebsocket", true);
 
     public static final ForgeConfigSpec.ConfigValue<String> MAGIC_NUMBER_INTRODUCTION = BUILDER
             .comment("What you want the introduction message to be for the magic number")
@@ -42,8 +51,10 @@ public class Config
     public static int magicNumber;
     public static String magicNumberIntroduction;
     public static Set<Item> items;
+    public static int webSocketPort;
+    public static boolean enableWebSocket;
 
-    private static boolean validateItemName(final Object obj)
+    static boolean validateItemName(final Object obj)
     {
         if (!(obj instanceof String itemName)) return false;
         ResourceLocation rl = ResourceLocation.tryParse(itemName);
@@ -53,17 +64,20 @@ public class Config
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
+        if (!event.getConfig().getModId().equals(OurMod.MODID)) {
+            return;
+        }
         logDirtBlock = LOG_DIRT_BLOCK.get();
         magicNumber = MAGIC_NUMBER.get();
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();
+        webSocketPort = WEBSOCKET_PORT.get();
+        enableWebSocket = ENABLE_WEBSOCKET.get();
 
         // convert the list of strings into a set of items
         items = ITEM_STRINGS.get().stream()
-                .map(itemName -> {
-                    ResourceLocation rl = ResourceLocation.tryParse(itemName);
-                    return rl == null ? null : ForgeRegistries.ITEMS.getValue(rl);
-                })
+                .map(ResourceLocation::tryParse)
+                .map(rl -> rl == null ? null : ForgeRegistries.ITEMS.getValue(rl))
                 .filter(java.util.Objects::nonNull)
-                .collect(Collectors.toSet());
+                .collect(Collectors.collectingAndThen(Collectors.toSet(), java.util.Collections::unmodifiableSet));
     }
 }

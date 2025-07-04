@@ -13,6 +13,9 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class TNTCommand {
+    private static final int TNT_FUSE_TICKS = 40;
+    private static final int COUNT = 4;
+    private static final double RADIUS = 3.0;
 
     @SubscribeEvent
     public static void onRegisterCommand(RegisterCommandsEvent event) {
@@ -27,8 +30,8 @@ public class TNTCommand {
         ServerPlayer player = source.getPlayerOrException();
         Vec3 pos = player.position();
 
-        double radius = 3.0;
-        int count = 4;
+        double radius = RADIUS;
+        int count = COUNT;
 
         for (int i = 0; i < count; i++) {
             double angle = 2 * Math.PI * i / count;
@@ -38,7 +41,7 @@ public class TNTCommand {
 
             PrimedTnt tnt = new PrimedTnt(EntityType.TNT, player.level());
             tnt.setPos(x, y, z);
-            tnt.setFuse(40); // 2 seconds (20 ticks per second)
+            tnt.setFuse(TNT_FUSE_TICKS); // 2 seconds (20 ticks per second)
             player.level().addFreshEntity(tnt);
         }
 

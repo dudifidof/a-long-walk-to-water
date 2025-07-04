@@ -20,6 +20,7 @@ import java.util.UUID;
 public class LockOnHandler {
     private static final Map<UUID, BlockPos> lockedTargets = new HashMap<>();
     private static final float SMOOTH_FACTOR = 0.01f; // Higher = faster ease-in/out
+    private static final int TNT_FUSE_TICKS = 40;
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
@@ -60,7 +61,7 @@ public class LockOnHandler {
                     Vec3 spawn = player.position().add(look.scale(1.5));
 
                     PrimedTnt tnt = new PrimedTnt(level, spawn.x, spawn.y, spawn.z, player);
-                    tnt.setFuse(40); // 2 seconds
+                    tnt.setFuse(TNT_FUSE_TICKS); // 2 seconds
 
                     level.addFreshEntity(tnt);
                     ctx.getSource().sendSuccess(() -> Component.literal("BOOM incoming!"), false);
