@@ -111,7 +111,7 @@ public class OurMod {
             webSocketServer.broadcast("Server started");
             broadcastToPlayers(Component.literal("WebSocket server listening on port " + actualWebSocketPort));
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.error("WebSocket server failed to start", e);
             webSocketServer = null;
             actualWebSocketPort = -1;
