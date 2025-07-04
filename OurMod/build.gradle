@@ -58,10 +58,30 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    embed
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:1.20.1-47.4.3"
     implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+    embed 'org.java-websocket:Java-WebSocket:1.5.3'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+}
+
+tasks.register('copyEmbedDeps', Sync) {
+    from { configurations.embed.collect { it.isDirectory() ? it : zipTree(it) } }
+    into "$buildDir/classes/java/main"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('compileJava').configure {
+    dependsOn tasks.copyEmbedDeps
+}
+
+// Ensure embedded dependencies are copied before running from source
+tasks.withType(JavaExec).matching { it.name.startsWith('run') }.configureEach {
+    dependsOn tasks.copyEmbedDeps
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -88,6 +108,7 @@ tasks.named('processResources', ProcessResources).configure {
 // Ensure default jar task is enabled
 tasks.named('jar', Jar).configure {
     enabled = true
+    dependsOn tasks.jarJar
 }
 
 // Configure shadowJar (fat jar with relocation)
