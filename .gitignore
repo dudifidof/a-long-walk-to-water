@@ -1,0 +1,15 @@
+# Gradle build output
+OurMod/build/
+OurMod/run/
+.gradle/
+**/logs/
+*.log
+
+# IDE files
+.idea/
+*.iml
+
+# Other
+
+*.jar
+!OurMod/gradle/wrapper/gradle-wrapper.jar

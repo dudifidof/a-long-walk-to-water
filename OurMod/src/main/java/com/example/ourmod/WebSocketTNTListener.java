@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
 
+/**
+ * Simple WebSocket server that listens for chat commands and forwards them to the Minecraft server.
+ */
 public class WebSocketTNTListener extends WebSocketServer {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -31,16 +34,30 @@ public class WebSocketTNTListener extends WebSocketServer {
         if (message.equalsIgnoreCase("!tnt")) {
             // Run Minecraft command from the server thread
             OurMod.runCommandFromServerThread("tnt");
+            conn.send("Boom!");
         }
     }
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        LOGGER.error("WebSocket error", ex);
+        if (conn != null) {
+            LOGGER.error("WebSocket error from {}", conn.getRemoteSocketAddress(), ex);
+        } else {
+            LOGGER.error("WebSocket server error", ex);
+        }
     }
 
     @Override
     public void onStart() {
         LOGGER.info("WebSocket server started");
+    }
+
+    /**
+     * Sends a text message to all connected WebSocket clients.
+     */
+    public void broadcast(String message) {
+        synchronized (this.getConnections()) {
+            this.getConnections().forEach(conn -> conn.send(message));
+        }
     }
 }
