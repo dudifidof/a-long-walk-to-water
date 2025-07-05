@@ -21,16 +21,27 @@ public class WebSocketCommand {
                             ctx.getSource().sendFailure(Component.literal("WebSocket disabled in config."));
                             return 0;
                         }
-                        boolean ok = OurMod.getInstance().startWebSocket();
-                        if (ok) {
-                            int p = OurMod.getInstance().getRunningWebSocketPort();
-                            ctx.getSource().sendSuccess(() -> Component.literal("WebSocket server started on port " + p), false);
-                            return Command.SINGLE_SUCCESS;
-                        } else {
+
+                        if (OurMod.getInstance().isWebSocketRunning()) {
                             int p = OurMod.getInstance().getRunningWebSocketPort();
                             ctx.getSource().sendFailure(Component.literal("WebSocket server already running on port " + p));
                             return 0;
                         }
+
+                        CommandSourceStack source = ctx.getSource();
+                        new Thread(() -> {
+                            boolean ok = OurMod.getInstance().startWebSocket();
+                            source.getServer().execute(() -> {
+                                if (ok) {
+                                    int p = OurMod.getInstance().getRunningWebSocketPort();
+                                    source.sendSuccess(() -> Component.literal("WebSocket server started on port " + p), false);
+                                } else {
+                                    source.sendFailure(Component.literal("Failed to start WebSocket server"));
+                                }
+                            });
+                        }, "WebSocketStartCommand").start();
+
+                        return Command.SINGLE_SUCCESS;
                     }))
                 .then(Commands.literal("stop")
                     .executes(ctx -> {
