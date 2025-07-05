@@ -139,3 +139,8 @@ tasks.withType(JavaCompile).configureEach {
 test {
     useJUnitPlatform()
 }
+
+// Convenience alias to match lowercase runclient command
+tasks.register('runclient') {
+    dependsOn tasks.named('runClient')
+}

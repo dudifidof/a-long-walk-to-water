@@ -8,7 +8,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = OurMod.MODID)
 public class WebSocketCommand {
     @SubscribeEvent
     public static void onRegisterCommands(RegisterCommandsEvent event) {
@@ -32,10 +32,21 @@ public class WebSocketCommand {
                         new Thread(() -> {
                             boolean ok = OurMod.getInstance().startWebSocket();
 
+
+
+
                             source.getServer().execute(() -> {
                                 if (ok) {
                                     int p = OurMod.getInstance().getRunningWebSocketPort();
                                     source.sendSuccess(() -> Component.literal("WebSocket server started on port " + p), false);
+
+                                    OurMod.getLogger().info("WEBSOCKET SERVER STARTED");
+                                } else {
+                                    OurMod.getLogger().info("WEBSOCKET FAILED TO START");
+                                    source.sendFailure(Component.literal("Failed to start WebSocket server"));
+                                }
+                            });
+
                                 } else {
                                     source.sendFailure(Component.literal("Failed to start WebSocket server"));
                                 }
@@ -48,6 +59,7 @@ public class WebSocketCommand {
                                 source.sendFailure(Component.literal("Failed to start WebSocket server"));
                             }
 
+
                         }, "WebSocketStartCommand").start();
 
                         return Command.SINGLE_SUCCESS;
@@ -57,6 +69,7 @@ public class WebSocketCommand {
                         boolean ok = OurMod.getInstance().stopWebSocket();
                         if (ok) {
                             ctx.getSource().sendSuccess(() -> Component.literal("WebSocket server stopped."), false);
+                            OurMod.getLogger().info("WEBSOCKET SERVER STOPPED");
                             return Command.SINGLE_SUCCESS;
                         } else {
                             ctx.getSource().sendFailure(Component.literal("WebSocket server was not running."));

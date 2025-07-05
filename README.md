@@ -8,6 +8,14 @@ Setting the port to `0` will let the OS pick a free port automatically.
 Forge already provides the SLF4J logging framework, so the build excludes that
 dependency from the shaded WebSocket library to avoid module conflicts.
 
+
+### Requirements
+- Java 17
+- Minecraft Forge **1.20.1**
+- The included Gradle wrapper (no separate Gradle installation needed)
+
+
+
 Big Ev is also experimenting with commands that interact with the world—like triggering TNT explosions based on external inputs (think YouTube or Twitch chat). We’ve wired up deferred registries, custom config files, and event listeners to prep for adding those interactive mechanics. The mod has clean client/server setup logic using Forge’s event bus and annotation system.
 
 We’re debugging a crash related to missing or mismatched metadata in the mods.toml, but that’s being fixed by making sure modId, version, and displayName match exactly across files. Once stable, this will be a powerful modding base for live Minecraft interactivity and creative world effects. It’s tight, well-structured, and ready to evolve into something wild.
@@ -17,10 +25,18 @@ Use the included Gradle wrapper from the `OurMod` directory:
 
 ```bash
 cd OurMod
-./gradlew runClient
+./gradlew runclient
+
+The bundled `startup.bat` script runs the same command and saves the output to
+`run/client.log` for easier debugging on Windows.
 ```
 
 This will download dependencies and start a development client with the mod loaded.
+
+When you join a world in this dev environment you should see the chat message
+`Welcome to Big Ev's world`. Use `/websocket start` to spin up the WebSocket
+server and watch the console for **WEBSOCKET SERVER STARTED** to verify it's
+running.
 
 ### Debugging the WebSocket
 When the server starts, look for a log entry like:
