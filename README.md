@@ -5,6 +5,9 @@ Hey Codex, we’re building a custom Minecraft Forge mod called OurMod for versi
 The mod is now **version 2.0.0** and depends on the `Java-WebSocket` library so it can listen on a local WebSocket port and react to chat commands. The port and whether the server is launched are configurable via `websocketPort` and `enableWebsocket` in `common.toml`.
 Setting the port to `0` will let the OS pick a free port automatically.
 
+Forge already provides the SLF4J logging framework, so the build excludes that
+dependency from the shaded WebSocket library to avoid module conflicts.
+
 Big Ev is also experimenting with commands that interact with the world—like triggering TNT explosions based on external inputs (think YouTube or Twitch chat). We’ve wired up deferred registries, custom config files, and event listeners to prep for adding those interactive mechanics. The mod has clean client/server setup logic using Forge’s event bus and annotation system.
 
 We’re debugging a crash related to missing or mismatched metadata in the mods.toml, but that’s being fixed by making sure modId, version, and displayName match exactly across files. Once stable, this will be a powerful modding base for live Minecraft interactivity and creative world effects. It’s tight, well-structured, and ready to evolve into something wild.
