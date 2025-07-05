@@ -19,8 +19,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import com.example.ourmod.Config;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -40,9 +40,9 @@ public class OurMod {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static OurMod INSTANCE;
     private static final int DEFAULT_WEBSOCKET_PORT = 9001;
-    private WebSocketTNTListener webSocketServer;
-    private volatile boolean webSocketRunning;
-    private int actualWebSocketPort = -1;
+    private static WebSocketTNTListener webSocketServer;
+    private static volatile boolean webSocketRunning;
+    private static int actualWebSocketPort = -1;
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
@@ -104,10 +104,18 @@ public class OurMod {
 
         try {
             webSocketServer = new WebSocketTNTListener(configuredPort);
-            webSocketServer.start();
+            Thread t = new Thread(() -> {
+                try {
+                    webSocketServer.start();
+                } catch (Exception e) {
+                    LOGGER.error("WebSocket server thread failed", e);
+                }
+            }, "WebSocketServer");
+            t.start();
             actualWebSocketPort = webSocketServer.getPort();
             webSocketRunning = true;
             LOGGER.info("WebSocket server started on ws://localhost:{}", actualWebSocketPort);
+            LOGGER.info("WEBSOCKET SERVER STARTED");
             webSocketServer.broadcast("Server started");
             broadcastToPlayers(Component.literal("WebSocket server listening on port " + actualWebSocketPort));
             return true;
@@ -157,6 +165,13 @@ public class OurMod {
     }
 
     /**
+     * Provides access to the mod logger for other classes.
+     */
+    public static Logger getLogger() {
+        return LOGGER;
+    }
+
+    /**
      * Returns the port the WebSocket server is bound to, or -1 if not running.
      */
     public synchronized int getRunningWebSocketPort() {
@@ -181,7 +196,7 @@ public class OurMod {
         LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         Config.items.forEach(item -> LOGGER.info("ITEM >> {}", item.toString()));
 
-        // WebSocket server will be started when the Minecraft server starts
+        // WebSocket server can be started later via the /websocket command
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
@@ -191,17 +206,13 @@ public class OurMod {
     }
 
     @SubscribeEvent
-    public void onServerStarted(ServerStartedEvent event) {
-        if (!Config.enableWebSocket) {
-            LOGGER.info("WebSocket server disabled by config");
-            return;
-        }
-        startWebSocket();
+    public void onServerStopping(ServerStoppingEvent event) {
+        stopWebSocket();
     }
 
     @SubscribeEvent
-    public void onServerStopping(ServerStoppingEvent event) {
-        stopWebSocket();
+    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        event.getEntity().sendSystemMessage(Component.literal("Welcome to Big Ev's world"));
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
