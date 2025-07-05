@@ -319,16 +319,7 @@ public class OurMod {
         LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
         Config.items.forEach(item -> LOGGER.info("ITEM >> {}", item.toString()));
 
-        // ✅ Start WebSocket server
-        new Thread(() -> {
-            try {
-                WebSocketTNTListener server = new WebSocketTNTListener(9001);
-                server.start();
-                LOGGER.info("WebSocket server started on port 9001");
-            } catch (Exception e) {
-                LOGGER.error("WebSocket server failed to start", e);
-            }
-        }).start();
+        // WebSocket server is started via the /websocket start command
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
