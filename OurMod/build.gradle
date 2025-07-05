@@ -64,8 +64,12 @@ configurations {
 
 dependencies {
     minecraft "net.minecraftforge:forge:1.20.1-47.4.3"
-    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
-    embed 'org.java-websocket:Java-WebSocket:1.5.3'
+    implementation('org.java-websocket:Java-WebSocket:1.5.3') {
+        exclude group: 'org.slf4j'
+    }
+    embed('org.java-websocket:Java-WebSocket:1.5.3') {
+        exclude group: 'org.slf4j'
+    }
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 }
 
@@ -110,6 +114,7 @@ tasks.named('jar', Jar).configure {
 shadowJar {
     archiveClassifier.set('shadow')
     relocate 'org.java_websocket', 'com.example.ourmod.shaded.websocket'
+    exclude 'org/slf4j/**'
 }
 
 // Optional publishing (not changed)
