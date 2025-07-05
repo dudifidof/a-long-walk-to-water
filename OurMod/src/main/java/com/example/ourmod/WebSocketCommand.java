@@ -35,6 +35,7 @@ public class WebSocketCommand {
 
 
 
+                          
                             source.getServer().execute(() -> {
                                 if (ok) {
                                     int p = OurMod.getInstance().getRunningWebSocketPort();
@@ -46,6 +47,7 @@ public class WebSocketCommand {
                                     source.sendFailure(Component.literal("Failed to start WebSocket server"));
                                 }
                             });
+
 
                                 } else {
                                     source.sendFailure(Component.literal("Failed to start WebSocket server"));

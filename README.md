@@ -8,6 +8,58 @@ Setting the port to `0` will let the OS pick a free port automatically.
 Forge already provides the SLF4J logging framework, so the build excludes that
 dependency from the shaded WebSocket library to avoid module conflicts.
 
+### Requirements
+- Java 17
+- Minecraft Forge **1.20.1**
+- The included Gradle wrapper (no separate Gradle installation needed)
+
+Big Ev is also experimenting with commands that interact with the world—like triggering TNT explosions based on external inputs (think YouTube or Twitch chat). We’ve wired up deferred registries, custom config files, and event listeners to prep for adding those interactive mechanics. The mod has clean client/server setup logic using Forge’s event bus and annotation system.
+
+We’re debugging a crash related to missing or mismatched metadata in the mods.toml, but that’s being fixed by making sure modId, version, and displayName match exactly across files. Once stable, this will be a powerful modding base for live Minecraft interactivity and creative world effects. It’s tight, well-structured, and ready to evolve into something wild.
+
+### Building and running
+Use the included Gradle wrapper from the `OurMod` directory:
+
+```bash
+cd OurMod
+./gradlew runclient
+
+The bundled `startup.bat` script runs the same command and saves the output to
+`run/client.log` for easier debugging on Windows.
+```
+
+This will download dependencies and start a development client with the mod loaded.
+
+When you join a world in this dev environment you should see the chat message
+`Welcome to Big Ev's world`. Use `/websocket start` to spin up the WebSocket
+server and watch the console for **WEBSOCKET SERVER STARTED** to verify it's
+running.
+
+### Debugging the WebSocket
+When the server starts, look for a log entry like:
+
+```
+[main/INFO] [OurMod]: Attempting WebSocket connection to ws://localhost:9001
+```
+
+If you see `WebSocket server started` shortly after, the socket is ready.
+
+You can control the socket in-game with `/websocket start` and `/websocket stop`.
+Players will see a chat message whenever the server starts or stops.
+
+Below is the code from the mod for reference:
+### Config.java
+```java
+# a-long-walk-to-water
+
+Hey Codex, we’re building a custom Minecraft Forge mod called OurMod for version 1.20.1. It’s created by Big Ev, and it's got a clean setup using Gradle with proper configuration files like mods.toml and Forge config specs. The mod currently adds a new food item, a custom block, and a creative mode tab to organize them. It logs some debug info like block names and user info to make sure everything's registering right.
+
+The mod is now **version 2.0.0** and depends on the `Java-WebSocket` library so it can listen on a local WebSocket port and react to chat commands. The port and whether the server is launched are configurable via `websocketPort` and `enableWebsocket` in `common.toml`.
+Setting the port to `0` will let the OS pick a free port automatically.
+
+Forge already provides the SLF4J logging framework, so the build excludes that
+dependency from the shaded WebSocket library to avoid module conflicts.
+
 
 ### Requirements
 - Java 17
@@ -340,6 +392,10 @@ public class OurMod {
 
         // WebSocket server is started via the /websocket start command
     }
+        Config.items.forEach(item -> LOGGER.info("ITEM >> {}", item.toString()));
+
+        // WebSocket server is started via the /websocket start command
+    }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
@@ -468,5 +524,12 @@ public class WebSocketTNTListener extends WebSocketServer {
         System.out.println("WebSocket server started");
     }
 }
+
+```
+
+
+### Troubleshooting
+If you encounter compile errors like "identifier expected" or "class expected", make sure every `class` and method in `OurMod.java` or `WebSocketCommand.java` has matching braces. Gradle build failures usually mean something was pasted incorrectly.
+=======
 ```
 
