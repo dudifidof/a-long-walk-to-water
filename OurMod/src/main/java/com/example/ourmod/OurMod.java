@@ -111,7 +111,11 @@ public class OurMod {
                 }
             }, "WebSocketServer");
             t.start();
+
             actualWebSocketPort = webSocketServer.getPort();
+
+            actualWebSocketPort = configuredPort;
+
             webSocketRunning = true;
             LOGGER.info("WebSocket server started on ws://localhost:{}", actualWebSocketPort);
             webSocketServer.broadcast("Server started");
