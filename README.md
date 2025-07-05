@@ -8,10 +8,13 @@ Setting the port to `0` will let the OS pick a free port automatically.
 Forge already provides the SLF4J logging framework, so the build excludes that
 dependency from the shaded WebSocket library to avoid module conflicts.
 
+
 ### Requirements
 - Java 17
 - Minecraft Forge **1.20.1**
 - The included Gradle wrapper (no separate Gradle installation needed)
+
+
 
 Big Ev is also experimenting with commands that interact with the world—like triggering TNT explosions based on external inputs (think YouTube or Twitch chat). We’ve wired up deferred registries, custom config files, and event listeners to prep for adding those interactive mechanics. The mod has clean client/server setup logic using Forge’s event bus and annotation system.
 

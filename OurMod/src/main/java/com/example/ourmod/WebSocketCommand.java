@@ -31,16 +31,35 @@ public class WebSocketCommand {
                         CommandSourceStack source = ctx.getSource();
                         new Thread(() -> {
                             boolean ok = OurMod.getInstance().startWebSocket();
+
+
+
+
                             source.getServer().execute(() -> {
                                 if (ok) {
                                     int p = OurMod.getInstance().getRunningWebSocketPort();
                                     source.sendSuccess(() -> Component.literal("WebSocket server started on port " + p), false);
+
                                     OurMod.getLogger().info("WEBSOCKET SERVER STARTED");
                                 } else {
                                     OurMod.getLogger().info("WEBSOCKET FAILED TO START");
                                     source.sendFailure(Component.literal("Failed to start WebSocket server"));
                                 }
                             });
+
+                                } else {
+                                    source.sendFailure(Component.literal("Failed to start WebSocket server"));
+                                }
+                            });
+
+                            if (ok) {
+                                int p = OurMod.getInstance().getRunningWebSocketPort();
+                                source.sendSuccess(() -> Component.literal("WebSocket server started on port " + p), false);
+                            } else {
+                                source.sendFailure(Component.literal("Failed to start WebSocket server"));
+                            }
+
+
                         }, "WebSocketStartCommand").start();
 
                         return Command.SINGLE_SUCCESS;
