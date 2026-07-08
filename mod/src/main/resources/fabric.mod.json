@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "longwalk",
+  "version": "${version}",
+  "name": "A Long Walk to Water",
+  "description": "Adds /run <x> <y> <z>, which walks, jumps, mines, and bridges the player to a destination automatically, plus a /tnt command.",
+  "authors": [
+    "dudifidof"
+  ],
+  "contact": {
+    "homepage": "https://github.com/dudifidof/a-long-walk-to-water"
+  },
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.dudifidof.longwalk.LongWalkMod"
+    ],
+    "client": [
+      "com.dudifidof.longwalk.LongWalkClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
